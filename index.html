@@ -1,0 +1,933 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEBULA PET 5.2 — Plasma Purple</title>
+
+<style>
+:root {
+  --bg:#080410;
+  --panel:#170d25;
+  --panel2:#211132;
+  --purple:#b45cff;
+  --pink:#ff43ce;
+  --white:#fff7ff;
+  --muted:#bdaaca;
+  --border:#c879ff40;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at 15% 10%,#8015b52e,transparent 35%),
+    radial-gradient(ellipse at 85% 30%,#f025a31a,transparent 35%),
+    #080410;
+  color:var(--white);
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+}
+button,input{font:inherit}
+button{cursor:pointer;color:inherit}
+button:disabled{opacity:.4;cursor:not-allowed}
+.topbar{
+  position:sticky;top:0;z-index:20;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;padding:14px 5%;
+  background:#0a0614ed;backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.logo{font-weight:1000;letter-spacing:1px}
+.logo span{color:var(--pink);text-shadow:0 0 15px var(--pink)}
+.top-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{
+  border:1px solid var(--border);border-radius:30px;
+  padding:9px 12px;background:#ffffff08;font-size:12px;
+}
+.container{width:min(1180px,92%);margin:auto}
+.hero{
+  min-height:540px;display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;align-items:center;padding:25px 0;
+}
+.eyebrow{color:#e879f9;font-size:11px;letter-spacing:3px;font-weight:900}
+h1{font-size:clamp(39px,5.3vw,68px);line-height:.98;letter-spacing:-2px}
+.gradient{
+  background:linear-gradient(100deg,#fff,#d8b4fe,#ff49d0);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+p{line-height:1.7}
+.muted{color:var(--muted);font-size:13px;line-height:1.75}
+.btn{
+  padding:12px 16px;border:1px solid #ed9cff66;border-radius:13px;
+  background:linear-gradient(135deg,#7c2bd9,#d82ba7);
+  box-shadow:0 5px 0 #40104f,0 0 22px #a855f733;
+  color:white;font-weight:850;transition:.18s;
+}
+.btn:hover{filter:brightness(1.15);transform:translateY(-2px)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #40104f}
+.btn.secondary{background:#ffffff08;box-shadow:none;border-color:var(--border)}
+.hero-buttons{display:flex;gap:12px;flex-wrap:wrap}
+.hero-scene{
+  position:relative;min-height:490px;display:grid;place-items:center;
+  overflow:hidden;isolation:isolate;
+}
+.plasma{
+  position:absolute;width:350px;height:350px;border-radius:50%;
+  background:radial-gradient(circle,#d946ef52,#9333ea23 42%,transparent 72%);
+  filter:blur(12px);animation:plasmaPulse 3s infinite alternate;
+}
+.beam{
+  position:absolute;width:3px;height:460px;left:50%;top:50%;
+  background:linear-gradient(transparent,#e879f9,white,#a855f7,transparent);
+  opacity:.5;filter:blur(1px);animation:beamSpin 14s linear infinite;
+}
+.beam.b2{transform:rotate(65deg);opacity:.23}
+.beam.b3{transform:rotate(125deg);opacity:.3}
+.orbit{
+  position:absolute;width:340px;height:125px;
+  border:2px solid #d946ef80;border-radius:50%;
+  box-shadow:0 0 20px #d946ef38;
+  transform:rotate(-25deg);animation:orbit 12s linear infinite;
+}
+.orbit.o2{width:370px;height:150px;border-color:#8b5cf680;animation-direction:reverse}
+.orbit.o3{width:290px;height:290px;border-color:#f472b650}
+
+/* ROBOT */
+.robot{
+  position:relative;width:280px;height:370px;z-index:3;
+  transform:scale(1.12);transform-origin:center;
+  animation:robotFloat 3.5s ease-in-out infinite;
+  cursor:grab;user-select:none;
+  touch-action:pan-y;
+  filter:drop-shadow(0 0 25px #c026d344);
+}
+.robot.sleeping{animation:sleepFloat 3s ease-in-out infinite}
+.robot.dancing{animation:robotDance .3s ease-in-out infinite alternate}
+.robot.happy{animation:happyBounce .3s ease-in-out 3}
+.robot-head{
+  position:absolute;left:46px;top:18px;width:188px;height:164px;
+  border:3px solid #e4b5ff;border-radius:48px 48px 42px 42px;
+  background:linear-gradient(145deg,#f7eaff,#b8a0cc 20%,#4b355b 43%,#170e25 66%,#d4a0ef);
+  box-shadow:inset -12px -15px 25px #080410,
+    inset 5px 5px 15px #ffffff55,0 0 35px #c026d355,0 0 65px #a855f733;
+  z-index:4;
+}
+.face{
+  position:absolute;inset:13px 12px 20px;border-radius:35px;
+  background:linear-gradient(145deg,#080610,#251033 65%,#080610);
+  border:1px solid #d879ff88;overflow:hidden;
+}
+.eyes{
+  position:absolute;left:17px;right:17px;top:45px;
+  display:flex;justify-content:space-between;gap:20px;
+}
+.eye{
+  width:43px;height:19px;border-radius:20px;
+  background:linear-gradient(90deg,#d946ef,#ffb6f1,#fff,#ff5bde);
+  box-shadow:0 0 13px #ff36c7,0 0 30px #d946ef;
+  position:relative;overflow:hidden;
+  animation:blink 4.5s infinite;
+}
+.eye:nth-child(2){animation-delay:.06s}
+.eye::after{
+  content:"";position:absolute;left:5px;top:2px;width:8px;height:5px;
+  border-radius:50%;background:white;opacity:.9;
+}
+.robot-mouth{
+  position:absolute;left:50%;top:88px;transform:translateX(-50%);
+  width:32px;height:10px;
+  border-bottom:3px solid #ff72df;border-radius:0 0 50% 50%;
+  filter:drop-shadow(0 0 5px #ff36c7);
+  transition:all .2s;
+}
+.ear{
+  position:absolute;top:76px;width:25px;height:54px;border-radius:10px;
+  background:linear-gradient(90deg,#4c1d68,#f0abfc,#4c1d68);
+  box-shadow:0 0 18px #d946ef70;z-index:3;
+}
+.ear.left{left:31px}.ear.right{right:31px}
+.robot-body{
+  position:absolute;left:68px;top:192px;width:144px;height:105px;
+  border-radius:29px 29px 35px 35px;
+  background:linear-gradient(135deg,#f0d9ff,#705080 24%,#21132e 55%,#c58de4 77%,#291437);
+  border:2px solid #c084fc;
+  box-shadow:inset -10px -12px 20px #090511,0 0 32px #a855f740;
+  z-index:3;
+}
+.core{
+  position:absolute;left:48px;top:27px;width:44px;height:44px;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff,#ffb6f1 20%,#d946ef 48%,#581c87 78%);
+  box-shadow:0 0 20px #ff36c7,0 0 42px #d946ef;
+  animation:corePulse 1.6s infinite alternate;
+}
+.arm{
+  position:absolute;top:201px;width:30px;height:82px;border-radius:16px;
+  background:linear-gradient(90deg,#301541,#e9d5ff,#5b2873);
+  border:1px solid #c084fc;z-index:2;
+}
+.arm.left{left:31px;transform:rotate(12deg);transform-origin:top center}
+.arm.right{right:31px;transform:rotate(-12deg);transform-origin:top center}
+.leg{
+  position:absolute;top:283px;width:39px;height:53px;border-radius:10px 10px 15px 15px;
+  background:linear-gradient(90deg,#3b1a50,#e9d5ff,#5b2873);
+  border:1px solid #c084fc;z-index:2;
+}
+.leg.left{left:85px}.leg.right{right:85px}
+.robot-name{
+  position:absolute;top:343px;left:0;right:0;text-align:center;
+  color:#f0abfc;font-size:10px;letter-spacing:5px;
+  text-shadow:0 0 12px #d946ef;
+}
+.sleep-eyes{
+  position:absolute;z-index:5;left:0;right:0;top:50px;
+  text-align:center;font-weight:1000;font-size:23px;color:#ffb6f1;
+  opacity:0;pointer-events:none;text-shadow:0 0 12px #d946ef;
+}
+.robot.sleeping .eyes{opacity:0}
+.robot.sleeping .sleep-eyes{opacity:1}
+.robot.sleeping .robot-mouth{
+  width:17px;height:7px;top:92px;border-bottom-color:#d946ef;
+}
+.robot.sleeping::after{
+  content:"Z z z";position:absolute;right:-5px;top:0;
+  color:#f0abfc;font-size:23px;font-weight:900;
+  text-shadow:0 0 15px #d946ef;
+  animation:sleepLetters 2s ease-in-out infinite;
+}
+.robot.happy .robot-mouth{
+  width:42px;height:17px;top:86px;
+  border:3px solid #ff72df;border-radius:5px 5px 50% 50%;
+  background:#8b1d91;
+}
+.robot.dancing .robot-mouth{
+  width:28px;height:18px;top:84px;
+  border:2px solid #ff72df;border-radius:50%;
+  background:#8b1d91;
+}
+.robot.dancing .arm.left{animation:armLeft .3s infinite alternate}
+.robot.dancing .arm.right{animation:armRight .3s infinite alternate}
+.robot.dancing .leg.left{animation:legLeft .3s infinite alternate}
+.robot.dancing .leg.right{animation:legRight .3s infinite alternate}
+.robot.dancing .core{animation:corePulse .25s infinite alternate}
+.scene-label{
+  position:absolute;bottom:4px;font-size:10px;letter-spacing:2px;
+  color:#bda5d7;text-align:center;
+}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 35px}
+.stat,.panel{
+  background:linear-gradient(145deg,#1c1029ed,#0f091a);
+  border:1px solid var(--border);border-radius:17px;padding:16px;
+  box-shadow:inset 0 1px #ffffff08,0 12px 35px #00000020;
+}
+.stat-top{display:flex;justify-content:space-between;gap:6px;color:var(--muted);font-size:12px}
+.stat strong{display:block;font-size:21px;margin:9px 0}
+.bar{height:6px;background:#ffffff12;border-radius:10px;overflow:hidden}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,#8b5cf6,#ff36c7);transition:width .3s}
+.section{margin:38px 0}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:15px}
+h2{font-size:clamp(22px,3vw,31px);margin:0 0 7px}
+h3{font-size:17px}
+.actions-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.action{
+  border:1px solid var(--border);border-radius:14px;padding:17px 5px;
+  background:linear-gradient(145deg,#28143c,#130a20);
+  font-size:12px;font-weight:800;transition:.18s;
+}
+.action span{display:block;font-size:26px;margin-bottom:9px}
+.action:hover{transform:translateY(-4px);border-color:#e879f9;box-shadow:0 0 22px #a855f730}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.item-list{display:grid;gap:10px}
+.item{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  border:1px solid #ffffff12;background:#ffffff04;border-radius:12px;padding:13px;
+}
+.item-info{flex:1;min-width:0}
+.item strong{font-size:13px}
+.item small{display:block;color:var(--muted);font-size:12px;line-height:1.6;margin-top:5px}
+.small-btn{
+  flex-shrink:0;border:1px solid #c084fc66;background:#7629a833;
+  border-radius:10px;padding:9px 11px;font-size:11px;font-weight:800;
+}
+.small-btn:hover{background:#a855f744}
+.progress{height:5px;background:#ffffff12;border-radius:10px;margin-top:9px;overflow:hidden}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,#8b5cf6,#ff36c7)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.tab{padding:10px 13px;border:1px solid var(--border);border-radius:10px;background:#ffffff05;color:#d6c2e8}
+.tab.active{background:linear-gradient(120deg,#7629a8,#c12ba8);color:white}
+.feature-display{display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:center}
+.feature-visual{
+  min-height:130px;border-radius:14px;display:grid;place-items:center;font-size:45px;
+  background:radial-gradient(circle,#a855f735,transparent 70%),#0b0714;
+  border:1px solid #b66aff25;
+}
+.chat-log{
+  min-height:90px;max-height:220px;overflow:auto;padding:12px;
+  background:#08050e;border:1px solid #ffffff10;border-radius:12px;
+  font-size:13px;line-height:1.7;margin-bottom:12px;
+}
+.chat-line{margin:5px 0;overflow-wrap:anywhere}
+.chat-line b{color:#e879f9}
+.chat-form{display:flex;gap:8px}
+.chat-form input{
+  flex:1;min-width:0;background:#08050e;border:1px solid var(--border);
+  color:white;border-radius:11px;padding:12px;
+}
+.faq-item{border-bottom:1px solid #ffffff12}
+.faq-q{
+  width:100%;display:flex;justify-content:space-between;text-align:left;
+  border:0;background:transparent;padding:17px 0;font-weight:750;
+}
+.faq-a{max-height:0;overflow:hidden;color:var(--muted);font-size:13px;line-height:1.8;transition:max-height .3s,padding .3s}
+.faq-item.open .faq-a{max-height:180px;padding-bottom:15px}
+footer{margin-top:45px;border-top:1px solid var(--border);padding:25px 0;text-align:center;color:var(--muted);font-size:12px}
+.toast{
+  position:fixed;z-index:100;bottom:20px;left:50%;
+  transform:translate(-50%,20px);opacity:0;pointer-events:none;
+  background:#241032;border:1px solid #e879f9;border-radius:12px;
+  padding:13px 18px;box-shadow:0 0 30px #a855f744;
+  font-size:13px;transition:.25s;max-width:90%;text-align:center;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.spark{
+  position:fixed;width:3px;height:3px;border-radius:50%;
+  background:#f0abfc;box-shadow:0 0 10px #d946ef;
+  pointer-events:none;z-index:-1;animation:twinkle 4s infinite alternate;
+}
+@keyframes robotFloat{0%,100%{translate:0 0}50%{translate:0 -10px}}
+@keyframes sleepFloat{0%,100%{translate:0 0}50%{translate:0 5px}}
+@keyframes robotDance{0%{transform:scale(1.12) rotate(-2deg)}100%{transform:scale(1.12) rotate(2deg)}}
+@keyframes happyBounce{0%,100%{translate:0 0}50%{translate:0 -12px}}
+@keyframes blink{0%,43%,47%,76%,80%,100%{transform:scaleY(1)}45%,78%{transform:scaleY(.07)}}
+@keyframes corePulse{to{scale:1.15;filter:brightness(1.4)}}
+@keyframes plasmaPulse{to{scale:1.12;opacity:.7}}
+@keyframes beamSpin{to{rotate:360deg}}
+@keyframes orbit{to{rotate:360deg}}
+@keyframes sleepLetters{0%{transform:translate(0,10px) scale(.7);opacity:0}30%{opacity:1}100%{transform:translate(12px,-25px) scale(1.15);opacity:0}}
+@keyframes armLeft{from{rotate:-40deg}to{rotate:45deg}}
+@keyframes armRight{from{rotate:40deg}to{rotate:-45deg}}
+@keyframes legLeft{from{transform:rotate(-10deg)}to{transform:rotate(15deg)}}
+@keyframes legRight{from{transform:rotate(10deg)}to{transform:rotate(-15deg)}}
+@keyframes twinkle{to{opacity:.15;scale:.5}}
+@media(max-width:800px){
+  .hero{grid-template-columns:1fr;padding-top:20px}
+  .hero-copy{text-align:center}
+  .hero-copy .muted{max-width:500px;margin:12px auto}
+  .hero-buttons{justify-content:center}
+  .hero-scene{grid-row:1;min-height:465px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .actions-grid{grid-template-columns:repeat(3,1fr)}
+  .two-col{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+  .topbar{padding:12px 4%}
+  .logo{font-size:13px}
+  .pill{font-size:10px;padding:8px}
+  .hero-scene{min-height:430px}
+  .robot{transform:scale(1.02)}
+  .actions-grid{grid-template-columns:repeat(3,1fr)}
+  .action{font-size:11px;padding:13px 3px}
+  .stat{padding:12px}
+  .stat strong{font-size:18px}
+  .panel{padding:13px}
+  .feature-display{grid-template-columns:1fr}
+  .feature-visual{min-height:85px}
+  .item{gap:7px;padding:10px}
+  .small-btn{padding:8px;font-size:10px}
+}
+</style>
+</head>
+
+<body>
+<header class="topbar">
+  <div class="logo">NEBULA PET <span>∞</span></div>
+  <div class="top-right">
+    <div class="pill">💎 <b id="crystalTop">100</b></div>
+    <div class="pill">УР. <b id="levelTop">1</b></div>
+    <button class="pill" data-action="sound" id="soundBtn">🔊 Звук</button>
+  </div>
+</header>
+
+<main class="container">
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">✦ COSMIC COMPANION SYSTEM</div>
+    <h1>ТВОЙ<br><span class="gradient">КОСМИЧЕСКИЙ</span><br>ДРУГ</h1>
+    <p class="muted">Знакомься с NEBULA — живым роботом из далёкой галактики. Корми его, играй, отправляй в экспедиции и наблюдай за его реакциями!</p>
+    <div class="hero-buttons">
+      <button class="btn" data-action="play">✦ Играть с NEBULA</button>
+      <button class="btn secondary" data-action="scroll" data-target="actions">Управление ↓</button>
+    </div>
+    <p class="muted" id="statusText">NEBULA смотрит на тебя и машет рукой!</p>
+  </div>
+
+  <div class="hero-scene">
+    <div class="plasma"></div>
+    <div class="beam"></div><div class="beam b2"></div><div class="beam b3"></div>
+    <div class="orbit"></div><div class="orbit o2"></div><div class="orbit o3"></div>
+
+    <div class="robot" id="robot" title="Попробуй аккуратно перетащить робота">
+      <div class="ear left"></div><div class="ear right"></div>
+      <div class="robot-head">
+        <div class="face">
+          <div class="eyes"><div class="eye"></div><div class="eye"></div></div>
+          <div class="robot-mouth"></div>
+          <div class="sleep-eyes">— ᴗ —</div>
+        </div>
+      </div>
+      <div class="arm left"></div><div class="arm right"></div>
+      <div class="robot-body"><div class="core"></div></div>
+      <div class="leg left"></div><div class="leg right"></div>
+      <div class="robot-name">N E B U L A</div>
+    </div>
+    <div class="scene-label">✦ PLASMA ROBOT · ALIVE EDITION ✦</div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><div class="stat-top"><span>⚡ Энергия</span><span id="energyText"></span></div><strong id="energyValue"></strong><div class="bar"><span id="energyBar"></span></div></div>
+  <div class="stat"><div class="stat-top"><span>💜 Настроение</span><span id="moodText"></span></div><strong id="moodValue"></strong><div class="bar"><span id="moodBar"></span></div></div>
+  <div class="stat"><div class="stat-top"><span>🛡️ Здоровье</span><span id="healthText"></span></div><strong id="healthValue"></strong><div class="bar"><span id="healthBar"></span></div></div>
+  <div class="stat"><div class="stat-top"><span>🍓 Сытость</span><span id="foodText"></span></div><strong id="foodValue"></strong><div class="bar"><span id="foodBar"></span></div></div>
+</section>
+
+<section class="section" id="actions">
+  <div class="section-head"><div><h2>Пульт управления</h2><div class="muted">Каждое действие меняет состояние питомца.</div></div><div class="pill">XP: <b id="xpText">0</b></div></div>
+  <div class="panel"><div class="actions-grid">
+    <button class="action" data-action="feed"><span>🍓</span>Покормить</button>
+    <button class="action" data-action="rest"><span>🌙</span>Спать</button>
+    <button class="action" data-action="train"><span>⚡</span>Тренировка</button>
+    <button class="action" data-action="play"><span>🎮</span>Играть</button>
+    <button class="action" data-action="repair"><span>🛠️</span>Ремонт</button>
+    <button class="action" data-action="dance"><span>🪩</span>Танцевать</button>
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Миссии галактики</h2><div class="muted">Выполняй задания и получай награды.</div></div><div class="pill" id="missionCount">0/4</div></div>
+  <div class="panel item-list" id="missionList"></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Космические экспедиции</h2><div class="muted">Открывай новые планеты и собирай кристаллы.</div></div></div>
+  <div class="two-col" id="expeditionList"></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Лаборатория и база</h2><div class="muted">Улучшай оборудование станции.</div></div><div class="pill">💎 <span id="crystalBase">100</span></div></div>
+  <div class="two-col">
+    <div class="panel"><h3>⚙️ Модули станции</h3><div class="item-list" id="upgradeList"></div></div>
+    <div class="panel"><h3>🎒 Инвентарь и крафт</h3><div class="item-list" id="inventoryList"></div><button class="btn" style="width:100%;margin-top:14px" data-action="craft">✧ Создать энергомодуль · 25 💎</button></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Гардероб NEBULA</h2><div class="muted">Открывай новые стили по мере роста уровня.</div></div></div>
+  <div class="panel item-list" id="skinList"></div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Центр знаний</h2><div class="muted">Узнай больше о способностях робота.</div></div></div>
+  <div class="panel">
+    <div class="tabs">
+      <button class="tab active" data-action="feature" data-index="0">Энергия</button>
+      <button class="tab" data-action="feature" data-index="1">Эволюция</button>
+      <button class="tab" data-action="feature" data-index="2">Исследования</button>
+    </div>
+    <div class="feature-display"><div class="feature-visual" id="featureIcon">⚡</div><div><h3 id="featureTitle">Плазменный реактор</h3><p class="muted" id="featureText">Внутреннее ядро преобразует космическую энергию в силу для приключений.</p></div></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Космический помощник</h2><div class="muted">Игровой чат с подсказками.</div></div></div>
+  <div class="panel">
+    <div class="chat-log" id="chatLog"><div class="chat-line"><b>NEBULA:</b> Привет, командир! Напиши «помощь», «энергия», «миссии» или «совет».</div></div>
+    <form class="chat-form" id="chatForm"><input id="chatInput" placeholder="Спроси NEBULA..." maxlength="200"><button class="btn" type="submit">Отправить</button></form>
+    <p class="muted">Это локальный игровой помощник, не подключённый к онлайн-нейросети.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Сохранение</h2><div class="muted">Храни свой прогресс на устройстве.</div></div></div>
+  <div class="panel" style="display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn secondary" data-action="save">💾 Сохранить</button>
+    <button class="btn secondary" data-action="export">📦 Скачать сохранение</button>
+    <button class="btn secondary" data-action="reset">↻ Начать заново</button>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>FAQ</h2><div class="muted">Ответы на вопросы.</div></div></div>
+  <div class="panel">
+    <div class="faq-item"><button class="faq-q" data-action="faq">Как повысить уровень? <span>＋</span></button><div class="faq-a">Тренируй NEBULA, выполняй миссии и исследуй планеты, чтобы получать опыт.</div></div>
+    <div class="faq-item"><button class="faq-q" data-action="faq">Как восстановить энергию? <span>＋</span></button><div class="faq-a">Используй сон, улучшай реактор или создай энергомодуль.</div></div>
+    <div class="faq-item"><button class="faq-q" data-action="faq">Сохранится ли прогресс? <span>＋</span></button><div class="faq-a">Прогресс сохраняется в браузере. Очистка данных браузера может удалить сохранение.</div></div>
+  </div>
+</section>
+</main>
+
+<footer>NEBULA PET ∞ · PLASMA PURPLE 5.2 · ТВОЯ ГАЛАКТИКА НАЧИНАЕТСЯ ЗДЕСЬ</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+"use strict";
+
+const SAVE_KEY="nebulaPetPlasmaPurple52";
+const initialState=()=>({
+  energy:85,mood:90,health:100,food:75,
+  xp:0,level:1,crystals:100,
+  missions:{feed:0,train:0,play:0,expedition:0},
+  claimed:[],upgrades:{reactor:0,drill:0,lab:0},
+  inventory:{module:0,core:0},
+  skin:"CYBER",sound:true,expeditions:0
+});
+
+function loadGame(){
+  try{
+    const raw=localStorage.getItem(SAVE_KEY);
+    if(raw){
+      const s=JSON.parse(raw),d=initialState();
+      return {
+        ...d,...s,
+        missions:{...d.missions,...s.missions},
+        upgrades:{...d.upgrades,...s.upgrades},
+        inventory:{...d.inventory,...s.inventory},
+        claimed:Array.isArray(s.claimed)?s.claimed:[]
+      };
+    }
+  }catch(e){console.warn("Не удалось загрузить сохранение",e)}
+  return initialState();
+}
+let game=loadGame();
+let toastTimer=null;
+let actionTimers={};
+let robotRotation=0;
+let pointerStart=null;
+
+const $=id=>document.getElementById(id);
+const clamp=n=>Math.max(0,Math.min(100,Math.round(n)));
+
+function notify(text){
+  $("toast").textContent=text;
+  $("toast").classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>$("toast").classList.remove("show"),2400);
+}
+function saveGame(show=false){
+  try{
+    localStorage.setItem(SAVE_KEY,JSON.stringify(game));
+    if(show)notify("Прогресс сохранён 💾");
+  }catch(e){notify("Не удалось сохранить. Проверь настройки браузера.")}
+}
+function sound(freq=520){
+  if(!game.sound)return;
+  try{
+    const C=window.AudioContext||window.webkitAudioContext;
+    if(!C)return;
+    const ctx=new C(),osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type="sine";osc.frequency.value=freq;
+    gain.gain.setValueAtTime(.04,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.13);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start();osc.stop(ctx.currentTime+.13);
+    osc.onended=()=>ctx.close();
+  }catch(e){}
+}
+function addXP(amount){
+  game.xp+=amount+game.upgrades.lab*2;
+  let up=false;
+  while(game.xp>=game.level*100){
+    game.xp-=game.level*100;
+    game.level++;
+    game.crystals+=25;
+    up=true;
+  }
+  if(up){notify("Новый уровень "+game.level+"! +25 💎");sound(850)}
+}
+
+function robotMood(mode){
+  const robot=$("robot");
+  robot.classList.remove("sleeping","dancing","happy");
+  clearTimeout(actionTimers.robot);
+  if(mode){
+    robot.classList.add(mode);
+    if(mode!=="sleeping"){
+      actionTimers.robot=setTimeout(()=>robot.classList.remove(mode),mode==="dancing"?2200:1800);
+    }
+  }
+}
+
+function perform(action){
+  switch(action){
+    case "feed":
+      if(game.food>=100){notify("NEBULA уже сыт!");return}
+      game.food=clamp(game.food+25);
+      game.mood=clamp(game.mood+5);
+      game.missions.feed++;
+      addXP(8);robotMood("happy");
+      $("statusText").textContent="NEBULA радостно ест и улыбается 🍓";
+      break;
+    case "rest":
+      if(game.energy>=100){notify("Энергия уже полная!");return}
+      game.energy=clamp(game.energy+35+game.upgrades.reactor*5);
+      addXP(5);robotMood("sleeping");
+      $("statusText").textContent="NEBULA сладко спит... Z z z";
+      break;
+    case "train":
+      if(game.energy<15){notify("Мало энергии — сначала отдохни!");return}
+      game.energy=clamp(game.energy-15);
+      game.mood=clamp(game.mood-3);
+      game.missions.train++;
+      addXP(20);robotMood("happy");
+      $("statusText").textContent="NEBULA тренируется и становится сильнее!";
+      break;
+    case "play":
+      if(game.energy<5){notify("Мало энергии — пора отдохнуть!");return}
+      game.energy=clamp(game.energy-5);
+      game.mood=clamp(game.mood+15);
+      game.missions.play++;
+      addXP(12);robotMood("happy");
+      $("statusText").textContent="NEBULA улыбается и играет с тобой! 🎮";
+      break;
+    case "repair":
+      if(game.health>=100){notify("Здоровье уже полное!");return}
+      game.health=clamp(game.health+35);
+      addXP(5);robotMood("happy");
+      $("statusText").textContent="NEBULA снова чувствует себя отлично!";
+      break;
+    case "dance":
+      if(game.energy<10){notify("Для танца нужно больше энергии.");return}
+      game.energy=clamp(game.energy-10);
+      game.mood=clamp(game.mood+20);
+      addXP(10);robotMood("dancing");
+      $("statusText").textContent="NEBULA танцует под космический бит! 🪩";
+      break;
+    default:return;
+  }
+  sound(action==="dance"?700:520);
+  render();saveGame();
+}
+
+const missions=[
+  {id:"feed",name:"Космический завтрак",desc:"Покорми питомца 3 раза",target:3,reward:20},
+  {id:"train",name:"Сила плазмы",desc:"Проведи 3 тренировки",target:3,reward:25},
+  {id:"play",name:"Время веселья",desc:"Поиграй с NEBULA 3 раза",target:3,reward:20},
+  {id:"expedition",name:"Исследователь",desc:"Заверши 2 экспедиции",target:2,reward:35}
+];
+
+function renderMissions(){
+  const root=$("missionList");root.replaceChildren();
+  missions.forEach(m=>{
+    const count=Math.min(game.missions[m.id]||0,m.target);
+    const claimed=game.claimed.includes(m.id);
+    const row=document.createElement("div");row.className="item";
+    const info=document.createElement("div");info.className="item-info";
+    const title=document.createElement("strong");
+    title.textContent=m.name+(claimed?" ✓":"");
+    const desc=document.createElement("small");
+    desc.textContent=m.desc+" · "+count+"/"+m.target;
+    const progress=document.createElement("div");progress.className="progress";
+    const fill=document.createElement("span");fill.style.width=count/m.target*100+"%";
+    progress.append(fill);info.append(title,desc,progress);
+    const btn=document.createElement("button");btn.className="small-btn";
+    btn.textContent=claimed?"Получено":"+"+m.reward+" 💎";
+    btn.disabled=claimed||count<m.target;
+    btn.dataset.action="claim";btn.dataset.id=m.id;
+    row.append(info,btn);root.append(row);
+  });
+  $("missionCount").textContent=missions.filter(m=>game.claimed.includes(m.id)).length+"/4";
+}
+function claimMission(id){
+  const m=missions.find(x=>x.id===id);
+  if(!m||game.claimed.includes(id)||(game.missions[id]||0)<m.target)return;
+  game.claimed.push(id);game.crystals+=m.reward;addXP(15);
+  notify("Задание выполнено! +"+m.reward+" 💎");
+  sound(800);render();saveGame();
+}
+
+const trips=[
+  {id:"moon",name:"🌑 Лунный кратер",desc:"Первая короткая экспедиция.",level:1,cost:10,reward:22,xp:15},
+  {id:"nebula",name:"🌌 Туманность Эйра",desc:"Путешествие среди кристаллов.",level:2,cost:20,reward:42,xp:30},
+  {id:"nova",name:"☄️ Зона Новой звезды",desc:"Испытание для опытного робота.",level:4,cost:35,reward:75,xp:55},
+  {id:"void",name:"🪐 Забытая планета",desc:"Редкие ресурсы далёкой галактики.",level:6,cost:50,reward:110,xp:80}
+];
+function renderTrips(){
+  const root=$("expeditionList");root.replaceChildren();
+  trips.forEach(t=>{
+    const card=document.createElement("div");card.className="panel";
+    const title=document.createElement("h3");title.textContent=t.name;
+    const desc=document.createElement("p");desc.className="muted";desc.textContent=t.desc;
+    const info=document.createElement("p");info.className="muted";
+    info.textContent="Уровень "+t.level+" · "+t.cost+" энергии · "+t.reward+" 💎";
+    const btn=document.createElement("button");btn.className="btn";btn.style.width="100%";
+    btn.textContent=game.level<t.level?"🔒 Нужен уровень "+t.level:"🚀 Отправиться";
+    btn.disabled=game.level<t.level;btn.dataset.action="trip";btn.dataset.id=t.id;
+    card.append(title,desc,info,btn);root.append(card);
+  });
+}
+function startTrip(id){
+  const t=trips.find(x=>x.id===id);
+  if(!t||game.level<t.level)return;
+  if(game.energy<t.cost){notify("Недостаточно энергии.");return}
+  game.energy-=t.cost;game.crystals+=t.reward+game.upgrades.drill*5;
+  game.missions.expedition++;game.expeditions++;addXP(t.xp);
+  robotMood("happy");$("statusText").textContent="Экспедиция завершена! NEBULA нашёл кристаллы.";
+  notify("Экспедиция завершена! Получены кристаллы.");
+  sound(650);render();saveGame();
+}
+
+const upgrades=[
+  {id:"reactor",name:"Плазменный реактор",desc:"Больше энергии за отдых.",base:40},
+  {id:"drill",name:"Кристальный бур",desc:"Дополнительные кристаллы в экспедициях.",base:50},
+  {id:"lab",name:"Нейролаборатория",desc:"Дополнительный опыт за действия.",base:60}
+];
+function renderUpgrades(){
+  const root=$("upgradeList");root.replaceChildren();
+  upgrades.forEach(u=>{
+    const cost=u.base*(game.upgrades[u.id]+1);
+    const row=document.createElement("div");row.className="item";
+    const info=document.createElement("div");info.className="item-info";
+    const title=document.createElement("strong");title.textContent=u.name+" · ур. "+game.upgrades[u.id];
+    const desc=document.createElement("small");desc.textContent=u.desc;
+    info.append(title,desc);
+    const btn=document.createElement("button");btn.className="small-btn";
+    btn.textContent="Улучшить · "+cost+" 💎";btn.dataset.action="upgrade";btn.dataset.id=u.id;
+    row.append(info,btn);root.append(row);
+  });
+}
+function buyUpgrade(id){
+  const u=upgrades.find(x=>x.id===id);if(!u)return;
+  const cost=u.base*(game.upgrades[id]+1);
+  if(game.crystals<cost){notify("Недостаточно кристаллов.");return}
+  game.crystals-=cost;game.upgrades[id]++;
+  notify("Улучшение установлено!");sound(620);render();saveGame();
+}
+
+function renderInventory(){
+  const root=$("inventoryList");root.replaceChildren();
+  [
+    {name:"🔋 Энергомодули",desc:"Восстанавливают 40 энергии.",value:game.inventory.module,action:"useModule"},
+    {name:"💠 Нейрокристаллы",desc:"Редкий ресурс лаборатории.",value:game.inventory.core}
+  ].forEach(item=>{
+    const row=document.createElement("div");row.className="item";
+    const info=document.createElement("div");info.className="item-info";
+    const title=document.createElement("strong");title.textContent=item.name;
+    const desc=document.createElement("small");desc.textContent=item.desc;
+    info.append(title,desc);
+    const value=document.createElement("b");value.textContent=item.value;
+    row.append(info,value);
+    if(item.action){
+      const btn=document.createElement("button");btn.className="small-btn";
+      btn.textContent="Использовать";btn.dataset.action=item.action;row.append(btn);
+    }
+    root.append(row);
+  });
+}
+function craftItem(){
+  if(game.crystals<25){notify("Для крафта нужно 25 кристаллов.");return}
+  game.crystals-=25;game.inventory.module++;
+  notify("Энергомодуль создан! 🔋");sound(700);render();saveGame();
+}
+function useModule(){
+  if(game.inventory.module<1){notify("У тебя пока нет энергомодулей.");return}
+  if(game.energy>=100){notify("Энергия уже полная.");return}
+  game.inventory.module--;game.energy=clamp(game.energy+40);
+  robotMood("happy");notify("Энергия восстановлена!");
+  sound(600);render();saveGame();
+}
+
+const skins=[
+  {id:"CYBER",name:"💜 Cyber Plasma",level:1,desc:"Фиолетовая броня"},
+  {id:"NEBULA",name:"🌌 Nebula Royal",level:3,desc:"Стиль космической туманности"},
+  {id:"NOVA",name:"💗 Nova Pink",level:5,desc:"Розовая плазменная броня"},
+  {id:"ECLIPSE",name:"🌠 Eclipse Chrome",level:8,desc:"Хромированная броня"}
+];
+const skinColors={
+  CYBER:["#d946ef","#ff36c7"],
+  NEBULA:["#8b5cf6","#c084fc"],
+  NOVA:["#ff36c7","#fb7185"],
+  ECLIPSE:["#a5b4fc","#e9d5ff"]
+};
+function applySkin(){
+  const colors=skinColors[game.skin]||skinColors.CYBER;
+  document.documentElement.style.setProperty("--purple",colors[0]);
+  document.documentElement.style.setProperty("--pink",colors[1]);
+  $("robot").style.setProperty("--robot-accent",colors[0]);
+  $("robot").querySelector(".robot-head").style.borderColor=colors[0];
+  $("robot").querySelector(".core").style.background=
+    `radial-gradient(circle,#fff,${colors[1]} 35%,${colors[0]} 75%)`;
+}
+function renderSkins(){
+  const root=$("skinList");root.replaceChildren();
+  skins.forEach(s=>{
+    const unlocked=game.level>=s.level,selected=game.skin===s.id;
+    const row=document.createElement("div");row.className="item";
+    const info=document.createElement("div");info.className="item-info";
+    const title=document.createElement("strong");title.textContent=s.name+(selected?" ✓":"");
+    const desc=document.createElement("small");desc.textContent=s.desc+" · Уровень "+s.level;
+    info.append(title,desc);
+    const btn=document.createElement("button");btn.className="small-btn";
+    btn.textContent=selected?"Выбран":unlocked?"Надеть":"🔒 Закрыт";
+    btn.disabled=selected||!unlocked;btn.dataset.action="skin";btn.dataset.id=s.id;
+    row.append(info,btn);root.append(row);
+  });
+}
+function changeSkin(id){
+  const s=skins.find(x=>x.id===id);
+  if(!s||game.level<s.level)return;
+  game.skin=id;applySkin();notify("Скин "+id+" активирован!");
+  sound(720);render();saveGame();
+}
+
+const featureData=[
+  {icon:"⚡",title:"Плазменный реактор",text:"Внутреннее ядро преобразует космическую энергию в силу. Отдых восстанавливает заряд."},
+  {icon:"🧬",title:"Эволюция NEBULA",text:"Новые уровни открывают дополнительные скины. Тренируй робота и совершенствуй его."},
+  {icon:"🪐",title:"Космические исследования",text:"Экспедиции позволяют исследовать планеты, получать кристаллы и развивать базу."}
+];
+function setFeature(index){
+  const f=featureData[index];if(!f)return;
+  document.querySelectorAll(".tab").forEach((t,i)=>t.classList.toggle("active",i===index));
+  $("featureIcon").textContent=f.icon;
+  $("featureTitle").textContent=f.title;
+  $("featureText").textContent=f.text;
+}
+function toggleFaq(button){
+  const item=button.closest(".faq-item");if(!item)return;
+  item.classList.toggle("open");
+  const sign=button.querySelector("span");
+  if(sign)sign.textContent=item.classList.contains("open")?"－":"＋";
+}
+function addChatLine(name,message){
+  const line=document.createElement("div");line.className="chat-line";
+  const label=document.createElement("b");label.textContent=name+": ";
+  line.append(label,document.createTextNode(message));
+  $("chatLog").append(line);$("chatLog").scrollTop=$("chatLog").scrollHeight;
+}
+function sendChat(message){
+  const q=message.toLowerCase();
+  let answer;
+  if(q.includes("помощ"))answer="Используй панель управления, выполняй миссии и исследуй планеты.";
+  else if(q.includes("энерг"))answer="Сейчас у тебя "+game.energy+" энергии. Попробуй сон или энергомодуль.";
+  else if(q.includes("мис"))answer="Покорми питомца, тренируйся, играй и заверши экспедиции.";
+  else if(q.includes("совет"))answer=game.energy<30?"Сначала восстанови энергию.":"Выполняй миссии — они дают кристаллы и опыт.";
+  else if(q.includes("уров"))answer="Твой уровень: "+game.level+". Опыт дают действия и экспедиции.";
+  else if(q.includes("крист"))answer="У тебя "+game.crystals+" кристаллов.";
+  else if(q.includes("привет"))answer="Привет, командир! NEBULA рад тебя видеть! 💜";
+  else answer="Попробуй спросить про энергию, миссии, уровень, кристаллы или совет.";
+  addChatLine("NEBULA",answer);
+}
+
+function render(){
+  ["energy","mood","health","food"].forEach(key=>{
+    const v=clamp(game[key]);
+    $(key+"Text").textContent=v+"%";
+    $(key+"Value").textContent=v+" / 100";
+    $(key+"Bar").style.width=v+"%";
+  });
+  $("crystalTop").textContent=game.crystals;
+  $("crystalBase").textContent=game.crystals;
+  $("levelTop").textContent=game.level;
+  $("xpText").textContent=game.xp+" / "+game.level*100+" XP";
+  $("soundBtn").textContent=game.sound?"🔊 Звук":"🔇 Звук";
+  renderMissions();renderTrips();renderUpgrades();renderInventory();renderSkins();
+}
+
+function exportSave(){
+  const blob=new Blob([JSON.stringify(game,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");a.href=url;a.download="nebula-pet-save.json";
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  notify("Сохранение скачано.");
+}
+function resetGame(){
+  if(!confirm("Начать заново? Текущий прогресс будет сброшен."))return;
+  game=initialState();
+  try{localStorage.removeItem(SAVE_KEY)}catch(e){}
+  robotMood("");applySkin();render();saveGame();
+  $("statusText").textContent="NEBULA готов к новому приключению!";
+  notify("Новая космическая история началась!");
+}
+
+/* Все кнопки обслуживаются одним обработчиком. */
+document.addEventListener("click",event=>{
+  const button=event.target.closest("button[data-action]");
+  if(!button)return;
+  const action=button.dataset.action;
+  try{
+    switch(action){
+      case "feed":case "rest":case "train":case "play":case "repair":case "dance":
+        perform(action);break;
+      case "sound":
+        game.sound=!game.sound;render();saveGame();
+        if(game.sound)sound(700);
+        notify(game.sound?"Звук включён":"Звук выключен");break;
+      case "scroll":
+        $(button.dataset.target)?.scrollIntoView({behavior:"smooth"});break;
+      case "claim":claimMission(button.dataset.id);break;
+      case "trip":startTrip(button.dataset.id);break;
+      case "upgrade":buyUpgrade(button.dataset.id);break;
+      case "craft":craftItem();break;
+      case "useModule":useModule();break;
+      case "skin":changeSkin(button.dataset.id);break;
+      case "feature":setFeature(Number(button.dataset.index));break;
+      case "faq":toggleFaq(button);break;
+      case "save":saveGame(true);break;
+      case "export":exportSave();break;
+      case "reset":resetGame();break;
+    }
+  }catch(error){
+    console.error("Ошибка кнопки "+action,error);
+    notify("Возникла ошибка. Открой Console через F12.");
+  }
+});
+
+$("chatForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const input=$("chatInput"),message=input.value.trim();
+  if(!message)return;
+  addChatLine("Ты",message);sendChat(message);input.value="";
+});
+
+/* Вращение персонажа указателем мыши. */
+$("robot").addEventListener("pointerdown",event=>{
+  pointerStart=event.clientX;
+});
+$("robot").addEventListener("pointermove",event=>{
+  if(pointerStart===null)return;
+  const delta=event.clientX-pointerStart;
+  pointerStart=event.clientX;
+  robotRotation+=delta*.5;
+  $("robot").style.animation="none";
+  $("robot").style.transform="scale(1.12) rotateY("+robotRotation+"deg)";
+});
+function endDrag(){pointerStart=null}
+$("robot").addEventListener("pointerup",endDrag);
+$("robot").addEventListener("pointercancel",endDrag);
+$("robot").addEventListener("lostpointercapture",endDrag);
+
+/* Космические звёзды. */
+for(let i=0;i<35;i++){
+  const star=document.createElement("div");star.className="spark";
+  star.style.left=Math.random()*100+"%";
+  star.style.top=Math.random()*100+"%";
+  star.style.animationDelay=Math.random()*4+"s";
+  star.style.opacity=String(.25+Math.random()*.65);
+  document.body.append(star);
+}
+
+/* Показатели питомца постепенно меняются со временем. */
+setInterval(()=>{
+  game.food=clamp(game.food-.2);
+  if(game.food<15)game.mood=clamp(game.mood-.5);
+  if(game.energy<10)game.mood=clamp(game.mood-.2);
+  render();saveGame();
+},15000);
+
+window.addEventListener("beforeunload",()=>saveGame());
+
+applySkin();
+render();
+</script>
+</body>
+</html>
